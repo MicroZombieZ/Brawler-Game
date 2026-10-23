@@ -1,0 +1,30 @@
+GOOGLE DOC UPDATE - GAUNTLET
+Prepared: 2026-10-23
+Status: Prepared locally; Google rejected the edit because the app connection lacks editing scopes.
+Current game values are preserved. No game code was changed.
+
+Replace the outdated Tank instruction with:
+[START WITH GAUNTLET, DO NOT WORK ON OTHER CLASSES UNTIL PERMITTED]
+
+Updated Gauntlet section:
+
+Gauntlet:
+Current game stats: 115 max HP, 0% defense displayed, walking speed 4 units/second, sprint speed 7 units/second, and 100 stamina. Sprinting drains 20 stamina/second while moving; walking or standing restores 15/second. After exhaustion, sprinting becomes available again at 25 stamina.
+Controls and behavior: MB1 = Punch, Q = Pummel, E = Shockwave, F = Hay-maker. You can walk, sprint, jump, and ground pound during abilities and recovery. Directional hitboxes follow the player's turning in solo and LAN play. Specials must start on the ground; Punch can start in the air. Abilities have no direct stamina cost. Only one attack can run at a time, and end-lag prevents starting another attack. Cooldowns start when the ability is used, even on a miss.
+Visual effects: Gold punch trails and hit sparks; Pummel grab flash, slam dust/debris, and sparks for each punch; Shockwave dust rings and debris; Hay-maker air trails and a larger impact burst. Kill-Streak adds a growing gold gauntlet glow, and slowed targets have blue wisps. Movement, landing, ground-pound, defeat, and respawn particles are also implemented, with local quality settings.
+
+Active:
+Pummel
+Q: 0.20-second windup before attempting to grab the nearest target in a forward cone within 1.8 units. Grab, lift, and slam the target, then punch three times for 10 base damage each (30 total). Damage occurs 0.45, 0.70, and 0.95 seconds after starting. The target stays 1.1 units in front as you move and turn. Successful animation lasts 1.20 seconds, followed by 0.25 seconds of end-lag. A missed grab causes 1.10 seconds of end-lag. 45-second cooldown.
+Shockwave
+E: 0.30-second windup before slamming the ground. Targets within 2.5 units take 10 base damage and a 70% slow; targets farther out, up to 5 units away, receive a 40% slow with no damage. Slows last 3 seconds and reduce other players' movement speed in LAN matches. The animation lasts 0.65 seconds, followed by 0.20 seconds of end-lag.
+25 second cooldown
+Punch
+Basic MB1 attack: 23 base damage on hit, 1.7-second cooldown. Hit the nearest target within a 2-unit forward cone after 0.12 seconds. The animation lasts 0.36 seconds, followed by 0.08 seconds of end-lag. Applies a small forward push (1.5 units/second initial knockback speed, reduced by friction).
+Hay-maker
+F: Launch immediately at 12 units/second for up to 0.30 seconds (up to 3.6 units from the launch alone), steering with the player's turning while normal movement remains available. Hit the first target caught by the swept launch path for 45 base damage and knockback (8 units/second initial push speed, reduced by friction). Uses a 0.95-unit center-distance tolerance along the path. End-lag is 0.30 seconds on a hit, or 1.20 seconds on a miss or reaching the plane edge. 50-second cooldown.
+Passive
+Reinforced
+Have an extra 15 max HP: 115 total maximum HP instead of the base 100.
+Kill-Streak
+Start at 1.00x damage. Every damaging hit adds 0.05x, capped at 1.35x (7 hits to reach the cap). Each damaging hit refreshes a 6.5-second timer, including every individual Pummel punch and each target damaged by Shockwave. Slowing a target without damage does not refresh it. After 6.5 seconds without a damaging hit, the multiplier resets to 1.00x; death or leaving Gauntlet also resets it. Damage uses the multiplier captured at the start of the attack, so stacks earned during an attack affect subsequent attacks. At maximum multiplier: Punch deals 31.05 damage, Pummel deals 40.50 total, inner Shockwave deals 13.50 per target, and Hay-maker deals 60.75. Solo pause freezes the timer; LAN menus do not pause the shared match.

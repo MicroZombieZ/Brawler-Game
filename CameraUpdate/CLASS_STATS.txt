@@ -1,0 +1,327 @@
+CLASS STATS AND ABILITY REFERENCE
+Last updated: 2026-10-20
+================================
+
+This file describes the current game and the remaining class designs.
+IMPLEMENTED = available in the game.
+PLACEHOLDER = selectable name with shared base stats and no class abilities.
+PLANNED = design information only; not selectable or implemented yet.
+TBD = not decided; do not treat as a working game value.
+
+Implemented values come from CombatSystem.java, CubeMovement.java,
+LobbyWorld.java, and ParticleSystem.java.
+Planned Shield and Medic details come from the supplied Class Details document.
+This is a reference, not a configuration file: editing it does not change gameplay.
+Values below assume default settings, without developer-console overrides.
+
+
+SHARED PLAYER STATS AND RULES
+============================
+Base maximum HP:               100
+Base defense:                  0% displayed; damage reduction is not implemented
+Walking speed:                 4 world units/second
+Sprinting speed:               7 world units/second
+Maximum stamina:               100
+Sprint stamina drain:          20/second while sprinting and actually moving
+Stamina recovery:              15/second when not actively sprinting
+Full stamina sprint duration:  5 seconds
+Exhaustion recovery threshold: 25 stamina before sprinting is allowed again
+Jump input:                    Space
+Jump velocity:                 7 world units/second
+Gravity:                       18 world units/second squared
+Jumps available:               2 before landing
+Ground pound input:            Left Control while airborne
+Ground pound velocity:         -24 world units/second until gravity accelerates it
+
+Movement uses WASD or arrow keys and follows the camera direction.
+Directional attack hitboxes follow the player's current body facing as it turns,
+including during attack startup and active abilities. Displayed hitboxes use
+the same direction as actual hit detection in solo and LAN play.
+Walking, sprinting, jumping, and ground pounding work during abilities/recovery.
+Gauntlet abilities do not directly spend stamina; sprinting still spends stamina.
+Special abilities must START on the ground. Punch can start in the air.
+Only one attack can be active at a time. Recovery prevents another attack.
+Cooldowns begin when an attack starts, including attacks that miss.
+In solo play, pausing, the class menu, and the dev console freeze gameplay/timers.
+In LAN matches, those menus stop only your inputs; the match keeps running and
+you can still take damage, be grabbed, or be pushed while a menu is open.
+Class selection uses R, then select a class and click Equip.
+Changing classes during an attack/recovery is blocked; cooldowns are preserved.
+
+
+GAUNTLET -- IMPLEMENTED
+======================
+Role/theme:                    Close-range fighter with grabs and knockback
+Maximum HP:                    115 (100 base + 15 from Reinforced)
+Defense:                       0% displayed
+Walking / sprinting speed:     4 / 7 world units/second
+Stamina:                       Shared player values above
+
+PASSIVE: REINFORCED
+  Adds 15 maximum HP, bringing Gauntlet to 115 maximum HP.
+
+PASSIVE: KILL-STREAK
+  Starting damage multiplier: 1.00x
+  Increase per damaging hit:  +0.05x
+  Maximum multiplier:         1.35x
+  Hits to reach maximum:     7 from the starting multiplier
+  Streak duration:            6.5 seconds without a damaging hit
+  Each damaging hit restarts the full 6.5-second timer, even at the cap.
+  Each individual Pummel hit grants a stack and refreshes the timer.
+  Each enemy damaged by Shockwave grants a stack and refreshes the timer.
+  A slow without damage does not grant a stack or refresh the timer.
+  Missing an attack does not immediately reset the streak.
+  Expiry, death, or leaving Gauntlet resets the multiplier to 1.00x.
+  Each attack snapshots the multiplier when it starts. Stacks gained during
+  that attack increase subsequent attacks, not the current attack's damage.
+
+PUNCH
+  Input:                       Left mouse button
+  Base damage:                 23
+  Damage at 1.35x:             31.05
+  Cooldown:                    1.7 seconds
+  Reach:                       2 world units, forward cone
+  Targets:                     Nearest living enemy in the cone
+  Hit timing:                  0.12 seconds after starting
+  Attack animation duration:   0.36 seconds
+  Recovery after animation:    0.08 seconds, hit or miss
+  Knockback starting speed:    1.5 world units/second, decaying with friction
+  Airborne activation:         Allowed
+  Effect:                      A quick gauntlet punch with a small push
+
+PUMMEL
+  Input:                       Q
+  Base damage:                 30 total (3 hits of 10)
+  Total damage at 1.35x:       40.50 (3 hits of 13.50)
+  Cooldown:                    45 seconds
+  Grab reach:                  1.8 world units, forward cone
+  Targets:                     Nearest living enemy in the cone
+  Grab attempt timing:         0.20 seconds after starting
+  Grabbed target position:     Held 1.1 units in front of the player
+  Damage timings:              0.45, 0.70, and 0.95 seconds after starting
+  Successful animation:        1.20 seconds, followed by 0.25 seconds recovery
+  Miss recovery:               1.10 seconds after the failed grab attempt
+  Grounded activation:         Required
+  Effect:                      Grab and lift a target, slam it, then punch it
+                               three times. The target follows you as you move
+                               and turn, remaining in front of the player.
+
+SHOCKWAVE
+  Input:                       E
+  Base damage:                 10 per enemy in the inner radius
+  Damage at 1.35x:             13.50 per enemy in the inner radius
+  Cooldown:                    25 seconds
+  Inner radius:                2.5 world units; 70% slow plus damage
+  Outer radius:                Up to 5 world units; 40% slow, no damage
+  Slow duration:               3 seconds
+  Targets:                     All living enemies within the radius
+  Impact timing:               0.30 seconds after starting
+  Attack animation duration:   0.65 seconds
+  Recovery after animation:    0.20 seconds
+  Ring visual duration:        0.70 seconds after impact
+  Grounded activation:         Required
+  Effect:                      Slam the ground and send out expanding rings
+  Training dummies show slow strength/duration but have no walking AI to slow.
+  In LAN matches, the slow reduces affected players' walking/sprinting speed.
+
+HAY-MAKER
+  Input:                       F
+  Base damage:                 45
+  Damage at 1.35x:             60.75
+  Cooldown:                    50 seconds
+  Launch speed:                12 world units/second in the current body direction
+  Steering:                    Follows the player's turning during the launch
+  Launch duration:             Up to 0.30 seconds
+  Launch-only travel distance: Up to 3.6 world units
+  Normal movement:             Allowed alongside the launch
+  Hit detection:               Swept path with 0.95-unit center-distance tolerance
+  Targets:                     First living enemy caught by the launch
+  Knockback starting speed:    8 world units/second, decaying with friction
+  Recovery on hit:             0.30 seconds
+  Recovery on miss/plane edge: 1.20 seconds
+  Grounded activation:         Required
+  Effect:                      Launch forward, strike one target, and push it away
+
+
+MAGE -- PLACEHOLDER
+==================
+Selectable:                    Yes
+Maximum HP:                    100
+Defense:                       0% displayed
+Movement / stamina:            Shared base values
+Active abilities / passives:   None implemented; design TBD
+
+
+RANGER -- PLACEHOLDER
+====================
+Selectable:                    Yes
+Maximum HP:                    100
+Defense:                       0% displayed
+Movement / stamina:            Shared base values
+Active abilities / passives:   None implemented; design TBD
+
+
+ROGUE -- PLACEHOLDER
+===================
+Selectable:                    Yes
+Maximum HP:                    100
+Defense:                       0% displayed
+Movement / stamina:            Shared base values
+Active abilities / passives:   None implemented; design TBD
+
+
+SHIELD -- PLANNED, NOT IMPLEMENTED
+=================================
+Maximum HP / stamina:          TBD
+Speed / defense values:        TBD, including mode-specific values
+Inputs / ranges / timings:     TBD
+
+CHARGE
+  Planned damage:              25
+  Planned cooldown:            35 seconds
+  Run forward behind a riot shield with limited turning.
+  Hitting an enemy deals damage and knocks them back.
+  Missing causes medium recovery; hitting a wall causes long recovery.
+  Launch speed, duration, knockback, and recovery seconds: TBD.
+
+SHIELD-BASH
+  Planned damage:              35
+  Planned cooldown:            25 seconds
+  Swing the riot shield forward. Missing causes long recovery.
+  Range, startup, animation, knockback, and recovery seconds: TBD.
+
+MODE: PROTECT / ASSAULT
+  Protect: Lower speed and higher defense.
+  Assault: Higher speed and lower defense.
+  Exact values, input, switching rules, and cooldown: TBD.
+
+Passives / basic attack:       TBD
+
+
+MEDIC -- PLANNED, NOT IMPLEMENTED
+================================
+Maximum HP / stamina:          TBD
+Speed / defense:               TBD
+Inputs / ranges / animations:  TBD
+
+PATCH-UP
+  Planned healing:             40 HP to a teammate over 15 seconds
+  Moving or taking damage by either participant interrupts the healing.
+  Cooldown after interruption: 50 seconds
+  Cooldown after completion, targeting rules, and range: TBD.
+
+SELF CARE
+  Planned healing:             25 HP to yourself over 10 seconds
+  Moving or taking damage interrupts the healing.
+  Cooldown after interruption: 40 seconds
+  Cooldown after completion and other restrictions: TBD.
+
+MEDI-GAS
+  Plant a machine that heals nearby allies.
+  Planned healing:             5 HP every 5 seconds
+  Machine lifetime:            50 seconds
+  Enemies can destroy the machine.
+  Radius, machine HP, cooldown, first-tick timing, and input: TBD.
+
+Passives / basic attack:       TBD
+
+
+TRAINING NPCS AND TESTING
+========================
+Initial dummy count:           4
+Default HP per dummy:          100
+Movement / attacks:            No walking AI and no attacks
+Damage / displacement:         Can take damage and be pushed around
+Respawn delay after defeat:    4 seconds, then full HP at the original position
+Slows:                        Shown above each affected dummy
+
+Backtick opens the developer console. Useful commands:
+  help                  Full command list
+  cooldowns off         Remove ability cooldowns; animations/recovery still apply
+  cooldowns reset       Ready all cooldown timers
+  heal                  Restore current class's maximum HP
+  stamina 100           Refill stamina
+  streak 1.35           Set maximum damage multiplier with a fresh 6.5-second timer
+  streak reset          Return to the base 1.00x multiplier
+  dummy hp 500          Set and refill dummy maximum HP
+  dummy reset           Restore four dummies using current dummy HP setting
+  hitboxes on           Show attack ranges and dummy bounds
+  stats on              Show detailed debug stats
+  reset                 Restore the player, arena, and dev settings to defaults
+
+All command details are also documented in README.md.
+
+
+LAN MULTIPLAYER RULES -- IMPLEMENTED
+===================================
+Network:                       Same Wi-Fi / wired local network; direct host IP
+Player limit:                  8, including the host
+Default port:                  TCP 24560 (editable in the lobby)
+Open lobby:                    F2, or Esc > LAN Lobby
+Host:                          Host Lobby, share the displayed IP, Start Match
+Join:                          Enter the host's local IP and port, Join Lobby
+Match:                         Shared free-for-all arena; joining in progress works
+Player health / abilities:     Same class stats and damage values listed above
+Targets:                       Other players and four shared training dummies
+Player respawn delay:          3 seconds after defeat
+Respawn health / stamina:      Current class maximum HP / 100 stamina
+Respawn streak:                Reset to 1.00x, no streak timer
+Respawn ability cooldowns:     Preserved; cooldowns stop while the player is dead
+Player slow effects:           Shockwave reduces walking/sprinting speed
+Grabs:                        Pummel holds the target; target cannot move/attack
+                              until released. The attacker can continue moving.
+Player collision:              Players can walk through each other
+Host authority:                Movement, stamina, physics, combat, damage,
+                              knockback, grabs, slows, cooldowns, and respawns
+Pausing / console / menus:     Stop local inputs only; others continue playing
+Dev commands:                  Only help, clear, hitboxes, stats, particles in LAN
+Leaving:                       F2 > Leave Lobby restores a fresh solo arena
+Host leaves / disconnects:     Lobby closes; guests return to the connection screen
+
+All devices must use the same updated game folder. No internet matchmaking,
+automatic lobby discovery, or host migration is implemented. Connection steps
+and private-network firewall setup are in README.md.
+
+
+3D PARTICLE EFFECTS -- IMPLEMENTED
+==================================
+Particles are cosmetic world-space visuals; class damage and timings above apply.
+They use the same camera projection and depth ordering as player/NPC geometry.
+
+Walking / sprinting:           Ground-contact dust; more frequent during sprinting
+Jump:                         Brief takeoff dust
+Double jump:                  Expanding airborne ring and fading air shards
+Landing:                      Dust scaled to impact speed
+Ground pound:                 Heavy dust, bouncing cube debris, impact ring
+Punch:                        Gold fist trail and directional hit sparks/shards
+Pummel:                       Grab flash, slam dust/debris, bursts for each punch
+Shockwave:                    Expanding dust ring and scattered ground debris
+Hay-maker:                    Air trails; larger directional burst on a hit
+Knockback:                    Directional wisps and sliding dust
+Kill-Streak:                  Gold gauntlet glow/sparks increase toward 1.35x;
+                              drifting sparks as the streak ends
+Slowed entities:              Sparse blue wisps
+Defeat:                       Colored cube fragments and shards
+Respawn:                      Inward sparks over 0.4s, then an outward pulse
+
+Hit bursts occur only on confirmed damaging hits; misses get swing/trail visuals.
+Particles fade and expire. Debris falls with gravity and bounces on the ground.
+Persistent effects are sparse, and live counts are capped for large fights.
+
+Quality setting:              Esc > Particles
+OFF:                          No particles
+LOW:                          160 live particles; 35% burst density
+MEDIUM (default):             400 live particles; 65% burst density
+HIGH:                         800 live particles; full burst density
+Lowering quality:             Immediately trims particles to the new limit
+Local console commands:       particles off|low|medium|high; particles clear
+Debug count:                  stats on
+Full reset:                   Clears particles and restores MEDIUM quality
+
+Solo pause:                   Freezes particle motion; timescale also applies
+LAN menus/pause:              Particles continue with the shared match
+LAN synchronization:          Host sends confirmed, sequenced effect events;
+                              every device renders its own particles locally
+Late joins / repeated states: Old bursts are skipped; repeated events are ignored
+Quality in LAN:               Each device controls its own effects quality
+Testing:                      java ParticleCheck; java LobbyCheck

@@ -1,0 +1,28 @@
+Brief description:
+I updated the in-game HUD in CubeMovement.java. The current interface has separate health and stamina bars, hides the old instructional and passive panels, and uses F11 for selected debug information.
+
+Current changes:
+- Reworked the stamina bar with a clearer label, numeric value, fill, border, and recovering status.
+- Added a separate health bar showing current and maximum HP.
+- Positioned the health bar higher on the screen.
+- Kept the stamina bar lower so it remains separate from the health bar.
+- Removed the old boxed health/damage/passive panel.
+- Removed the top-left combat message, including the prompt to equip Gauntlet.
+- Removed the always-visible control/key-bind text.
+- Removed the normal always-visible speedometer display.
+- F11 toggles the debug HUD.
+- The F11 debug HUD shows speed, maximum speed, defense, and the damage modifier with its streak timer when active.
+
+Files changed:
+- CubeMovement.java
+- This handoff file
+
+Gameplay values and class abilities were not changed, so CLASS_STATS.txt did not require an update.
+
+Verification:
+- javac *.java completed successfully.
+- MovementCheck passed.
+- ConsoleCheck passed.
+
+Known compiler status:
+- Compilation succeeds with the existing Swing serialization and this-escape warnings.
